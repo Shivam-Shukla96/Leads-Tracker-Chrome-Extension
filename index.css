@@ -1,43 +1,116 @@
 body {
-    margin: 0;
-    padding: 10px;
-    font-family: Arial, Helvetica, sans-serif;
-    min-width: 400px;
+  margin: 0;
+  padding: 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 420px;
+  background: #f9f9f9;
 }
 
-input {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    border: 1px solid #5f9341;
-    margin-bottom: 4px;
+.app {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+h2,
+h3 {
+  margin: 0;
+}
+
+.section {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #444;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #5f9341;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.row {
+  display: flex;
+  gap: 6px;
 }
 
 button {
-    background: #5f9341;
-    color: white;
-    padding: 10px 20px;
-    border: 1px solid #5f9341;
-    font-weight: bold;
+  background: #5f9341;
+  color: white;
+  padding: 8px 12px;
+  border: 1px solid #5f9341;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-#delete-btn {
-    background: white;
-    color: #5f9341;
+button.secondary {
+  background: white;
+  color: #5f9341;
 }
 
 ul {
-    margin-top: 20px;
-    list-style: none;
-    padding-left: 0;
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
 }
 
-li {
-    margin-top: 5px;
+.item-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
 }
 
-a {
-    color: #5f9341;
+.item-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
 }
 
+.item-content strong {
+  display: block;
+  margin-bottom: 2px;
+}
 
+.item-content a {
+  color: #5f9341;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.delete-item-btn {
+  background: #d9534f;
+  border-color: #d9534f;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+.empty {
+  color: #888;
+  font-size: 13px;
+  padding: 8px 0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
