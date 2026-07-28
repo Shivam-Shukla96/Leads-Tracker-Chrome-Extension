@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -12,33 +12,46 @@
       <div id="status-message" class="status-message hidden"></div>
 
       <div class="section">
-        <label for="group-name">Create group</label>
-        <div class="row">
-          <input id="group-name" placeholder="e.g. Clients" />
-          <button id="create-group-btn">Add Group</button>
+        <div class="row top-actions">
+          <button id="manage-groups-btn" class="secondary">See Groups</button>
+          <select id="group-select"></select>
+          <button id="show-group-form-btn" class="secondary">＋ New Group</button>
         </div>
-        <div id="group-list" class="group-list"></div>
+
+        <div id="group-form" class="sub-form hidden">
+          <label for="group-name">Group name</label>
+          <div class="row">
+            <input id="group-name" placeholder="e.g. Clients" />
+            <button id="create-group-btn">Create</button>
+          </div>
+        </div>
+
+        <div id="group-management" class="group-management hidden"></div>
       </div>
 
       <div class="section">
-        <label for="search-input">Search items</label>
         <input id="search-input" placeholder="Search by key or value" />
       </div>
 
       <div class="section">
-        <label for="group-select">Current group</label>
-        <select id="group-select"></select>
-
-        <label for="key-input">Key</label>
-        <input id="key-input" placeholder="Optional - auto-generated from URL" />
-
-        <label for="value-input">Value / URL</label>
-        <input id="value-input" placeholder="Paste URL or custom text" />
-
         <div class="row">
-          <button id="save-input-btn">Save Item</button>
-          <button id="save-tab-btn" class="secondary">Save Current Tab</button>
-          <button id="cancel-edit-btn" class="secondary hidden">Cancel Edit</button>
+          <button id="show-manual-form-btn" class="secondary">Add Item Manually</button>
+          <button id="save-tab-btn" class="primary-green">Save Current Tab</button>
+        </div>
+
+        <div id="manual-form" class="sub-form hidden">
+          <label for="key-input">Key</label>
+          <input id="key-input" placeholder="Optional - auto-generated from URL" />
+
+          <label for="value-input">Value / URL</label>
+          <input id="value-input" placeholder="Paste URL or custom text" />
+
+          <div class="row">
+            <button id="save-input-btn">Save Item</button>
+            <button id="cancel-edit-btn" class="secondary hidden">
+              Cancel Edit
+            </button>
+          </div>
         </div>
       </div>
 
@@ -48,16 +61,17 @@
           <div class="row">
             <button id="export-json-btn" class="secondary">Export JSON</button>
             <button id="export-csv-btn" class="secondary">Export CSV</button>
-            <button id="delete-btn" class="secondary danger">Delete Selected</button>
+            <button id="delete-btn" class="secondary danger">
+              Delete Selected
+            </button>
           </div>
         </div>
 
-        <div class="row import-row">
+        <div class="import-row">
           <input id="import-file" type="file" accept=".json,.csv" />
           <button id="import-btn" class="secondary">Import</button>
         </div>
 
-        <p class="hint">Tip: drag an item onto a group chip to move it.</p>
         <ul id="items-list"></ul>
       </div>
     </div>

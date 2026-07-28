@@ -8,9 +8,13 @@ let draggedItem = null;
 function parseStoredState(raw) {
   try {
     const saved = JSON.parse(raw || "{}");
-    const groups = saved.groups && typeof saved.groups === "object" ? saved.groups : {};
+    const groups =
+      saved.groups && typeof saved.groups === "object" ? saved.groups : {};
     if (!groups.Default) groups.Default = [];
-    const currentGroup = saved.currentGroup && groups[saved.currentGroup] ? saved.currentGroup : "Default";
+    const currentGroup =
+      saved.currentGroup && groups[saved.currentGroup]
+        ? saved.currentGroup
+        : "Default";
     return { groups, currentGroup };
   } catch (e) {
     return { groups: { Default: [] }, currentGroup: "Default" };
@@ -20,7 +24,12 @@ function parseStoredState(raw) {
 const groupNameInput = document.getElementById("group-name");
 const createGroupBtn = document.getElementById("create-group-btn");
 const groupSelect = document.getElementById("group-select");
-const groupList = document.getElementById("group-list");
+const groupManagement = document.getElementById("group-management");
+const showGroupFormBtn = document.getElementById("show-group-form-btn");
+const manageGroupsBtn = document.getElementById("manage-groups-btn");
+const groupForm = document.getElementById("group-form");
+const showManualFormBtn = document.getElementById("show-manual-form-btn");
+const manualForm = document.getElementById("manual-form");
 
 const searchInput = document.getElementById("search-input");
 
@@ -131,14 +140,14 @@ function buildEntry(key, value) {
 
   return {
     key: safeKey || extractKeyFromText(safeValue),
-    value: safeValue
+    value: safeValue,
   };
 }
 
 function normalizeEntry(entry) {
   return {
     key: (entry.key || "").trim().toLowerCase(),
-    value: (entry.value || "").trim().toLowerCase()
+    value: (entry.value || "").trim().toLowerCase(),
   };
 }
 
@@ -206,6 +215,8 @@ function setEditMode(index) {
   valueInput.value = item.value || "";
   saveInputBtn.textContent = "Save Edit";
   cancelEditBtn.classList.remove("hidden");
+  manualForm.classList.remove("hidden");
+  showManualFormBtn.textContent = "Hide Item Form";
 }
 
 function renderGroups() {
@@ -220,33 +231,42 @@ function renderGroups() {
     groupSelect.appendChild(option);
   });
 
-  groupList.innerHTML = Object.keys(state.groups)
+  groupManagement.innerHTML = Object.keys(state.groups)
     .map((groupName) => {
-      const active = groupName === state.currentGroup ? "active" : "";
+      const active = groupName === state.currentGroup ? "group-row active" : "group-row";
       return `
-        <button class="group-chip ${active}" data-group="${escapeHtml(groupName)}">
-          ${escapeHtml(groupName)}
-        </button>
+        <div class="${active}">
+          <span>${escapeHtml(groupName)}</span>
+          <div class="group-actions">
+            <button class="small" data-action="select" data-group="${escapeHtml(groupName)}">Select</button>
+            <button class="small secondary" data-action="rename" data-group="${escapeHtml(groupName)}">Rename</button>
+            <button class="small danger" data-action="delete" data-group="${escapeHtml(groupName)}">Delete</button>
+          </div>
+        </div>
       `;
     })
     .join("");
 
-  groupList.querySelectorAll(".group-chip").forEach((chip) => {
-    chip.addEventListener("click", () => {
-      const targetGroup = chip.dataset.group;
-      if (state.groups[targetGroup]) {
+  groupManagement.querySelectorAll("button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const action = button.dataset.action;
+      const targetGroup = button.dataset.group;
+      if (!targetGroup) return;
+
+      if (action === "select") {
         state.currentGroup = targetGroup;
         clearEditState();
         saveState();
         render();
+      } else if (action === "delete") {
+        if (targetGroup === "Default") {
+          showStatus("Default group cannot be deleted.", "error");
+          return;
+        }
+        deleteGroup(targetGroup);
+      } else if (action === "rename") {
+        renameGroup(targetGroup);
       }
-    });
-
-    chip.addEventListener("dragover", (e) => e.preventDefault());
-    chip.addEventListener("drop", () => {
-      if (!draggedItem) return;
-      moveItemToGroup(draggedItem.groupName, chip.dataset.group, draggedItem.index);
-      draggedItem = null;
     });
   });
 }
@@ -312,7 +332,9 @@ function renderItems() {
   });
 
   document.querySelectorAll(".copy-item-btn").forEach((btn) => {
-    btn.addEventListener("click", () => copyItemValue(Number(btn.dataset.index)));
+    btn.addEventListener("click", () =>
+      copyItemValue(Number(btn.dataset.index)),
+    );
   });
 
   document.querySelectorAll(".edit-item-btn").forEach((btn) => {
@@ -329,6 +351,54 @@ function render() {
   renderItems();
 }
 
+function toggleGroupForm(show) {
+  groupForm.classList.toggle("hidden", !show);
+  if (!show) {
+    groupNameInput.value = "";
+  }
+}
+
+function toggleManualForm(show) {
+  manualForm.classList.toggle("hidden", !show);
+}
+
+function closeManualForm() {
+  toggleManualForm(false);
+  showManualFormBtn.textContent = "Add Item Manually";
+}
+
+function deleteGroup(groupName) {
+  if (!state.groups[groupName]) return;
+
+  const confirmed = window.confirm(
+    `Delete group "${groupName}" and all its saved values? This cannot be undone.`,
+  );
+  if (!confirmed) return;
+
+  delete state.groups[groupName];
+  if (state.currentGroup === groupName) {
+    state.currentGroup = Object.keys(state.groups)[0] || "Default";
+  }
+  saveState();
+  render();
+  showStatus(`Deleted group ${groupName}.`, "success");
+}
+
+function renameGroup(groupName) {
+  const nextName = prompt("Rename group", groupName);
+  if (!nextName) return;
+  const trimmed = nextName.trim();
+  if (!trimmed || state.groups[trimmed]) return;
+  state.groups[trimmed] = state.groups[groupName];
+  delete state.groups[groupName];
+  if (state.currentGroup === groupName) {
+    state.currentGroup = trimmed;
+  }
+  saveState();
+  render();
+  showStatus(`Renamed group to ${trimmed}.`, "success");
+}
+
 function saveItemFromInput() {
   const group = ensureGroup(state.currentGroup);
   if (!group) return;
@@ -340,14 +410,16 @@ function saveItemFromInput() {
   }
 
   if (editingMeta) {
-    const items = state.groups[editingMeta.groupName] || [];
-    if (isDuplicateEntry(entry, editingMeta.groupName, editingMeta.index)) {
+    const targetGroupName = editingMeta.groupName;
+    const items = state.groups[targetGroupName] || [];
+    if (isDuplicateEntry(entry, targetGroupName, editingMeta.index)) {
       showStatus("This item already exists in this group.", "error");
       return;
     }
     items[editingMeta.index] = entry;
     clearEditState();
-    showStatus(`Updated item in ${editingMeta.groupName}.`, "success");
+    closeManualForm();
+    showStatus(`Updated item in ${targetGroupName}.`, "success");
   } else {
     const result = addEntryToGroup(group, entry);
     if (!result.added) {
@@ -405,13 +477,15 @@ function deleteItem(index) {
 
 function deleteSelectedItems() {
   const selectedIndexes = Array.from(
-    document.querySelectorAll(".item-checkbox:checked")
+    document.querySelectorAll(".item-checkbox:checked"),
   ).map((checkbox) => Number(checkbox.dataset.index));
 
   if (!selectedIndexes.length) return;
 
   const items = state.groups[state.currentGroup] || [];
-  const remaining = items.filter((_, index) => !selectedIndexes.includes(index));
+  const remaining = items.filter(
+    (_, index) => !selectedIndexes.includes(index),
+  );
   state.groups[state.currentGroup] = remaining;
 
   saveState();
@@ -424,7 +498,9 @@ function copyItemValue(index) {
   if (!item) return;
 
   navigator.clipboard.writeText(item.value || "").then(() => {
-    const button = document.querySelector(`.copy-item-btn[data-index="${index}"]`);
+    const button = document.querySelector(
+      `.copy-item-btn[data-index="${index}"]`,
+    );
     if (button) {
       button.textContent = "Copied";
       setTimeout(() => {
@@ -451,16 +527,14 @@ function moveItemToGroup(fromGroup, toGroup, index) {
 
 function getExportItems() {
   const selectedIndexes = Array.from(
-    document.querySelectorAll(".item-checkbox:checked")
+    document.querySelectorAll(".item-checkbox:checked"),
   ).map((checkbox) => Number(checkbox.dataset.index));
 
   const items = state.groups[state.currentGroup] || [];
 
   if (!selectedIndexes.length) return items;
 
-  return selectedIndexes
-    .map((index) => items[index])
-    .filter(Boolean);
+  return selectedIndexes.map((index) => items[index]).filter(Boolean);
 }
 
 function buildCsv(items) {
@@ -471,9 +545,7 @@ function buildCsv(items) {
 
   return rows
     .map((row) =>
-      row
-        .map((value) => `"${String(value).replace(/"/g, '""')}"`)
-        .join(",")
+      row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(","),
     )
     .join("\n");
 }
@@ -486,19 +558,16 @@ function exportData(format) {
           {
             group: state.currentGroup,
             exportedAt: new Date().toISOString(),
-            items
+            items,
           },
           null,
-          2
+          2,
         )
       : buildCsv(items);
 
-  const blob = new Blob(
-    [content],
-    {
-      type: format === "json" ? "application/json" : "text/csv;charset=utf-8"
-    }
-  );
+  const blob = new Blob([content], {
+    type: format === "json" ? "application/json" : "text/csv;charset=utf-8",
+  });
 
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -562,7 +631,9 @@ function importDataFromFile(file) {
 
       if (file.name.toLowerCase().endsWith(".json")) {
         const parsed = JSON.parse(content);
-        parsedItems = Array.isArray(parsed) ? parsed : parsed.items || parsed.data || [];
+        parsedItems = Array.isArray(parsed)
+          ? parsed
+          : parsed.items || parsed.data || [];
       } else if (file.name.toLowerCase().endsWith(".csv")) {
         parsedItems = parseCsv(content);
       } else {
@@ -574,7 +645,10 @@ function importDataFromFile(file) {
       if (!group) return;
 
       parsedItems.forEach((item) => {
-        const entry = buildEntry(item.key || item.name || "", item.value || item.url || "");
+        const entry = buildEntry(
+          item.key || item.name || "",
+          item.value || item.url || "",
+        );
         if (!isDuplicateEntry(entry, group)) {
           state.groups[group].push(entry);
         }
@@ -600,6 +674,8 @@ createGroupBtn.addEventListener("click", () => {
   groupNameInput.value = "";
   saveState();
   render();
+  toggleGroupForm(false);
+  showStatus(`Created group ${group}.`, "success");
 });
 
 groupSelect.addEventListener("change", (e) => {
@@ -617,9 +693,24 @@ searchInput.addEventListener("input", (e) => {
   render();
 });
 
+showGroupFormBtn.addEventListener("click", () => toggleGroupForm(true));
+manageGroupsBtn.addEventListener("click", () => {
+  const isHidden = groupManagement.classList.toggle("hidden");
+  manageGroupsBtn.textContent = isHidden ? "See Groups" : "Hide Groups";
+  if (!isHidden) {
+    renderGroups();
+  }
+});
+showManualFormBtn.addEventListener("click", () => {
+  const isHidden = manualForm.classList.toggle("hidden");
+  showManualFormBtn.textContent = isHidden ? "Add Item Manually" : "Hide Item Form";
+});
 saveInputBtn.addEventListener("click", saveItemFromInput);
 saveTabBtn.addEventListener("click", saveCurrentTab);
-cancelEditBtn.addEventListener("click", clearEditState);
+cancelEditBtn.addEventListener("click", () => {
+  clearEditState();
+  closeManualForm();
+});
 
 deleteBtn.addEventListener("click", deleteSelectedItems);
 
@@ -642,5 +733,10 @@ if (chrome?.storage?.onChanged) {
   });
 }
 
+toggleGroupForm(false);
+toggleManualForm(false);
+groupManagement.classList.add("hidden");
+manageGroupsBtn.textContent = "See Groups";
+showManualFormBtn.textContent = "Add Item Manually";
 hydrateStateFromStorage();
 render();

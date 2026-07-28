@@ -6,6 +6,10 @@ body {
   background: #f7f7f7;
 }
 
+body * {
+  box-sizing: border-box;
+}
+
 .app {
   display: flex;
   flex-direction: column;
@@ -48,6 +52,27 @@ select {
   flex-wrap: wrap;
 }
 
+.top-actions {
+  align-items: center;
+}
+
+.top-actions select {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.import-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.import-row input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
 button {
   background: #5f9341;
   color: white;
@@ -61,6 +86,12 @@ button {
 button.secondary {
   background: white;
   color: #5f9341;
+}
+
+button.primary-green {
+  background: #5f9341;
+  border-color: #5f9341;
+  color: white;
 }
 
 button.danger {
@@ -79,13 +110,17 @@ button.small {
 }
 
 .status-message {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 9999;
   padding: 8px 10px;
   border-radius: 6px;
   font-size: 12px;
-  margin-bottom: 6px;
   border: 1px solid #b8d89b;
   background: #eef6e7;
   color: #2f5d16;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .status-message.error {
@@ -94,51 +129,78 @@ button.small {
   color: #a33;
 }
 
-.group-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+.sub-form {
   margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
 }
 
-.group-chip {
-  background: #eef6e7;
-  color: #2f5d16;
-  border: 1px solid #b8d89b;
-  border-radius: 999px;
-  padding: 6px 10px;
-  font-size: 12px;
+.group-management {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.group-chip.active {
-  background: #5f9341;
-  color: white;
+.group-management.hidden {
+  display: none;
+}
+
+.group-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.group-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.group-row.active {
+  color: #5f9341;
+  font-weight: bold;
 }
 
 ul {
   list-style: none;
   padding: 0;
-  margin: 8px 0 0;
+  margin: 4px 0 0;
 }
 
 .item-card {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 8px;
-  padding: 8px 0;
+  gap: 6px;
+  padding: 7px 0;
   border-bottom: 1px solid #eee;
 }
 
 .item-content {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
   flex: 1;
+  min-width: 0;
+}
+
+.item-checkbox {
+  margin: 2px 0 0;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .item-text {
   min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .item-text strong {
@@ -173,6 +235,13 @@ ul {
 .item-actions {
   display: flex;
   gap: 4px;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.item-actions button {
+  padding: 4px 6px;
+  font-size: 11px;
 }
 
 .section-header {
@@ -181,10 +250,6 @@ ul {
   align-items: center;
   gap: 8px;
   margin-bottom: 6px;
-}
-
-.import-row {
-  margin-bottom: 8px;
 }
 
 .hint {
