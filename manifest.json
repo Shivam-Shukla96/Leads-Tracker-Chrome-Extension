@@ -6,7 +6,10 @@
     "default_popup": "index.html",
     "default_icon": "icon.png"
   },
-  "permissions": ["tabs"],
+  "permissions": ["tabs", "storage", "notifications"],
+  "background": {
+    "service_worker": "background.js"
+  },
 
   "commands": {
     "_execute_action": {
@@ -14,6 +17,12 @@
         "default": "Alt+P"
       },
       "description": "Open the extension popup"
+    },
+    "save-current-tab": {
+      "suggested_key": {
+        "default": "Alt+L"
+      },
+      "description": "Save current tab"
     }
   }
 }

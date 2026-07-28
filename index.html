@@ -9,6 +9,7 @@
   <body>
     <div class="app">
       <h2>Leads Tracker</h2>
+      <div id="status-message" class="status-message hidden"></div>
 
       <div class="section">
         <label for="group-name">Create group</label>
@@ -16,31 +17,47 @@
           <input id="group-name" placeholder="e.g. Clients" />
           <button id="create-group-btn">Add Group</button>
         </div>
+        <div id="group-list" class="group-list"></div>
+      </div>
+
+      <div class="section">
+        <label for="search-input">Search items</label>
+        <input id="search-input" placeholder="Search by key or value" />
       </div>
 
       <div class="section">
         <label for="group-select">Current group</label>
         <select id="group-select"></select>
-      </div>
 
-      <div class="section">
         <label for="key-input">Key</label>
-        <input id="key-input" placeholder="Optional. Leave empty to auto-generate" />
+        <input id="key-input" placeholder="Optional - auto-generated from URL" />
 
         <label for="value-input">Value / URL</label>
-        <input id="value-input" placeholder="Paste a URL or custom value" />
+        <input id="value-input" placeholder="Paste URL or custom text" />
 
         <div class="row">
           <button id="save-input-btn">Save Item</button>
-          <button id="save-tab-btn">Save Current Tab</button>
+          <button id="save-tab-btn" class="secondary">Save Current Tab</button>
+          <button id="cancel-edit-btn" class="secondary hidden">Cancel Edit</button>
         </div>
       </div>
 
       <div class="section">
         <div class="section-header">
           <h3 id="group-title">Items</h3>
-          <button id="delete-btn" class="secondary">Delete Selected</button>
+          <div class="row">
+            <button id="export-json-btn" class="secondary">Export JSON</button>
+            <button id="export-csv-btn" class="secondary">Export CSV</button>
+            <button id="delete-btn" class="secondary danger">Delete Selected</button>
+          </div>
         </div>
+
+        <div class="row import-row">
+          <input id="import-file" type="file" accept=".json,.csv" />
+          <button id="import-btn" class="secondary">Import</button>
+        </div>
+
+        <p class="hint">Tip: drag an item onto a group chip to move it.</p>
         <ul id="items-list"></ul>
       </div>
     </div>

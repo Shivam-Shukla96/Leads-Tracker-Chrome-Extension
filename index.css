@@ -2,8 +2,8 @@ body {
   margin: 0;
   padding: 10px;
   font-family: Arial, Helvetica, sans-serif;
-  width: 420px;
-  background: #f9f9f9;
+  width: 460px;
+  background: #f7f7f7;
 }
 
 .app {
@@ -18,7 +18,7 @@ h3 {
 }
 
 .section {
-  background: #fff;
+  background: white;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 10px;
@@ -45,6 +45,7 @@ select {
 .row {
   display: flex;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 button {
@@ -60,6 +61,58 @@ button {
 button.secondary {
   background: white;
   color: #5f9341;
+}
+
+button.danger {
+  background: #d9534f;
+  border-color: #d9534f;
+  color: white;
+}
+
+button.small {
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+.hidden {
+  display: none;
+}
+
+.status-message {
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-bottom: 6px;
+  border: 1px solid #b8d89b;
+  background: #eef6e7;
+  color: #2f5d16;
+}
+
+.status-message.error {
+  border-color: #e7b2b2;
+  background: #fff2f2;
+  color: #a33;
+}
+
+.group-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.group-chip {
+  background: #eef6e7;
+  color: #2f5d16;
+  border: 1px solid #b8d89b;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.group-chip.active {
+  background: #5f9341;
+  color: white;
 }
 
 ul {
@@ -84,21 +137,59 @@ ul {
   flex: 1;
 }
 
-.item-content strong {
+.item-text {
+  min-width: 0;
+}
+
+.item-text strong {
   display: block;
   margin-bottom: 2px;
 }
 
-.item-content a {
+.item-text a {
   color: #5f9341;
   text-decoration: none;
   word-break: break-all;
 }
 
-.delete-item-btn {
-  background: #d9534f;
-  border-color: #d9534f;
-  padding: 6px 8px;
+.favicon,
+.favicon-placeholder {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.favicon-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eee;
+  border-radius: 3px;
+  color: #666;
+  font-size: 10px;
+}
+
+.item-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.import-row {
+  margin-bottom: 8px;
+}
+
+.hint {
+  margin: 0 0 8px;
+  color: #777;
   font-size: 12px;
 }
 
@@ -106,11 +197,4 @@ ul {
   color: #888;
   font-size: 13px;
   padding: 8px 0;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
 }
